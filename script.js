@@ -126,7 +126,7 @@ let currentAccount;
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
 
-  const currentAccount = accounts.find(
+  currentAccount = accounts.find(
     account => account.nickname === inputLoginUsername.value.toLowerCase()
   );
 
