@@ -101,21 +101,19 @@ const displayBalance = function (transactions) {
   labelBalance.textContent = `${balance}$`;
 };
 
-displayBalance(account1.transactions);
-
-const displayTotal = function (transactions) {
-  const depositesTotal = transactions
+const displayTotal = function (account) {
+  const depositesTotal = account.transactions
     .filter(trans => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
 
-  const withdrawalsTotal = transactions
+  const withdrawalsTotal = account.transactions
     .filter(trans => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
 
-  const interestTotal = transactions
+  const interestTotal = account.transactions
     .filter(trans => trans > 0)
-    .map(depos => (depos * 1.1) / 100)
-    .filter(interes => interes >= 5)
+    .map(depos => (depos * account.interest) / 100)
+    .filter(interest => interest >= 5)
     .reduce((acc, interest) => acc + interest, 0);
 
   labelSumIn.textContent = `${depositesTotal}$`;
@@ -123,4 +121,31 @@ const displayTotal = function (transactions) {
   labelSumInterest.textContent = `${interestTotal}$`;
 };
 
-displayTotal(account1.transactions);
+let currentAccount;
+
+btnLogin.addEventListener('click', e => {
+  e.preventDefault();
+
+  const currentAccount = accounts.find(
+    account => account.nickname === inputLoginUsername.value.toLowerCase()
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    labelWelcome.textContent = `Рады, что вы снова с нами, ${
+      currentAccount.userName.split(' ')[0]
+    }!`;
+
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+    displayTransactions(currentAccount.transactions);
+    displayBalance(currentAccount.transactions);
+    displayTotal(currentAccount);
+
+    containerApp.style.opacity = 1;
+  } else {
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = 'Войдите в свой аккаунт';
+  }
+});
