@@ -83,3 +83,44 @@ const displayTransactions = function (transactions) {
 };
 
 displayTransactions(account1.transactions);
+
+const createNicknames = function (accounts) {
+  accounts.forEach(acc => {
+    acc.nickname = acc.userName
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  });
+};
+
+createNicknames(accounts);
+
+const displayBalance = function (transactions) {
+  const balance = transactions.reduce((acc, trans) => (acc += trans));
+  labelBalance.textContent = `${balance}$`;
+};
+
+displayBalance(account1.transactions);
+
+const displayTotal = function (transactions) {
+  const depositesTotal = transactions
+    .filter(trans => trans > 0)
+    .reduce((acc, trans) => acc + trans, 0);
+
+  const withdrawalsTotal = transactions
+    .filter(trans => trans < 0)
+    .reduce((acc, trans) => acc + trans, 0);
+
+  const interestTotal = transactions
+    .filter(trans => trans > 0)
+    .map(depos => (depos * 1.1) / 100)
+    .filter(interes => interes >= 5)
+    .reduce((acc, interest) => acc + interest, 0);
+
+  labelSumIn.textContent = `${depositesTotal}$`;
+  labelSumOut.textContent = `${withdrawalsTotal}$`;
+  labelSumInterest.textContent = `${interestTotal}$`;
+};
+
+displayTotal(account1.transactions);
