@@ -96,8 +96,9 @@ const createNicknames = function (accounts) {
 
 createNicknames(accounts);
 
-const displayBalance = function (transactions) {
-  const balance = transactions.reduce((acc, trans) => (acc += trans));
+const displayBalance = function (account) {
+  const balance = account.transactions.reduce((acc, trans) => (acc += trans));
+  account.balance = balance;
   labelBalance.textContent = `${balance}$`;
 };
 
@@ -121,6 +122,12 @@ const displayTotal = function (account) {
   labelSumInterest.textContent = `${interestTotal}$`;
 };
 
+const updateUI = function (account) {
+  displayTransactions(account.transactions);
+  displayBalance(account);
+  displayTotal(account);
+};
+
 let currentAccount;
 
 btnLogin.addEventListener('click', e => {
@@ -139,13 +146,36 @@ btnLogin.addEventListener('click', e => {
     inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    displayTransactions(currentAccount.transactions);
-    displayBalance(currentAccount.transactions);
-    displayTotal(currentAccount);
+    updateUI(currentAccount);
 
     containerApp.style.opacity = 1;
   } else {
     containerApp.style.opacity = 0;
     labelWelcome.textContent = 'Войдите в свой аккаунт';
+  }
+});
+
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+
+  const transferAmount = Number(inputTransferAmount.value);
+  const recipientNickname = inputTransferTo.value.toLowerCase();
+  const recipientAccount = accounts.find(
+    account => account.nickname === recipientNickname
+  );
+
+  inputTransferTo.value = '';
+  inputTransferAmount.value = '';
+
+  if (
+    transferAmount > 0 &&
+    currentAccount.balance >= transferAmount &&
+    recipientAccount &&
+    currentAccount.nickname !== recipientAccount?.nickname
+  ) {
+    currentAccount.transactions.push(-transferAmount);
+    recipientAccount.transactions.push(transferAmount);
+
+    updateUI(currentAccount);
   }
 });
