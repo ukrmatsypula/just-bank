@@ -82,8 +82,6 @@ const displayTransactions = function (transactions) {
   });
 };
 
-displayTransactions(account1.transactions);
-
 const createNicknames = function (accounts) {
   accounts.forEach(acc => {
     acc.nickname = acc.userName
@@ -178,4 +176,24 @@ btnTransfer.addEventListener('click', e => {
 
     updateUI(currentAccount);
   }
+});
+
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.nickname &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const currentAccountIndex = accounts.findIndex(
+      account => account.nickname === currentAccount.nickname
+    );
+    accounts.splice(currentAccountIndex, 1);
+    containerApp.style.opacity = 0;
+  }
+
+  inputCloseUsername.value = '';
+  inputClosePin.value = '';
+
+  labelWelcome.textContent = 'Войдите в свой аккаунт';
 });
