@@ -197,3 +197,19 @@ btnClose.addEventListener('click', e => {
 
   labelWelcome.textContent = 'Войдите в свой аккаунт';
 });
+
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+
+  const loanAmount = Number(inputLoanAmount.value);
+
+  if (
+    loanAmount > 0 &&
+    currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
+  ) {
+    currentAccount.transactions.push(loanAmount);
+    updateUI(currentAccount);
+
+    inputLoanAmount.value = '';
+  }
+});
