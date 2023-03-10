@@ -4,7 +4,7 @@
 
 const account1 = {
   userName: 'Cecil Ireland',
-  transactions: [500, 250, -300, 5000, -850, -110, -170, 1100],
+  transactions: [500.12, 250.33, -300.16, 5000.434, -850, -110, -170, 1100],
   interest: 1.5,
   pin: 1111,
 };
@@ -80,7 +80,7 @@ const displayTransactions = function (transactions, sort = false) {
           <div class="transactions__type transactions__type--${transType}">
             ${index + 1} ${transType}
           </div>
-          <div class="transactions__value">${trans}$</div>
+          <div class="transactions__value">${trans.toFixed(2)}$</div>
         </div>`;
 
     containerTransactions.insertAdjacentHTML('afterbegin', transactionRow);
@@ -102,7 +102,7 @@ createNicknames(accounts);
 const displayBalance = function (account) {
   const balance = account.transactions.reduce((acc, trans) => (acc += trans));
   account.balance = balance;
-  labelBalance.textContent = `${balance}$`;
+  labelBalance.textContent = `${balance.toFixed(2)}$`;
 };
 
 const displayTotal = function (account) {
@@ -120,9 +120,9 @@ const displayTotal = function (account) {
     .filter(interest => interest >= 5)
     .reduce((acc, interest) => acc + interest, 0);
 
-  labelSumIn.textContent = `${depositesTotal}$`;
-  labelSumOut.textContent = `${withdrawalsTotal}$`;
-  labelSumInterest.textContent = `${interestTotal}$`;
+  labelSumIn.textContent = `${depositesTotal.toFixed(2)}$`;
+  labelSumOut.textContent = `${withdrawalsTotal.toFixed(2)}$`;
+  labelSumInterest.textContent = `${interestTotal.toFixed(2)}$`;
 };
 
 const updateUI = function (account) {
@@ -140,7 +140,7 @@ btnLogin.addEventListener('click', e => {
     account => account.nickname === inputLoginUsername.value.toLowerCase()
   );
 
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     labelWelcome.textContent = `Рады, что вы снова с нами, ${
       currentAccount.userName.split(' ')[0]
     }!`;
@@ -161,7 +161,7 @@ btnLogin.addEventListener('click', e => {
 btnTransfer.addEventListener('click', e => {
   e.preventDefault();
 
-  const transferAmount = Number(inputTransferAmount.value);
+  const transferAmount = +inputTransferAmount.value;
   const recipientNickname = inputTransferTo.value.toLowerCase();
   const recipientAccount = accounts.find(
     account => account.nickname === recipientNickname
@@ -188,7 +188,7 @@ btnClose.addEventListener('click', e => {
 
   if (
     inputCloseUsername.value === currentAccount.nickname &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const currentAccountIndex = accounts.findIndex(
       account => account.nickname === currentAccount.nickname
@@ -206,7 +206,7 @@ btnClose.addEventListener('click', e => {
 btnLoan.addEventListener('click', e => {
   e.preventDefault();
 
-  const loanAmount = Number(inputLoanAmount.value);
+  const loanAmount = Math.floor(inputLoanAmount.value);
 
   if (
     loanAmount > 0 &&
