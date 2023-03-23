@@ -7,6 +7,18 @@ const account1 = {
   transactions: [500.12, 250.33, -300.16, 5000.434, -850, -110, -170, 1100],
   interest: 1.5,
   pin: 1111,
+  transactionsDates: [
+    '2020-10-02T14:43:31.074Z',
+    '2020-10-29T11:24:19.761Z',
+    '2021-01-22T12:17:346.255Z',
+    '2022-04-12T18:33:11.041Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2022-04-12T18:33:11.041Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const account2 = {
@@ -14,6 +26,18 @@ const account2 = {
   transactions: [2000, 6400, -1350, -70, -210, -2000, 5500, -30],
   interest: 1.3,
   pin: 2222,
+  transactionsDates: [
+    '2020-10-02T14:43:31.074Z',
+    '2020-10-29T11:24:19.761Z',
+    '2021-01-22T12:17:346.255Z',
+    '2022-04-12T18:33:11.041Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2022-04-12T18:33:11.041Z',
+  ],
+  currency: 'UAH',
+  locale: 'uk-UA',
 };
 
 const account3 = {
@@ -21,6 +45,18 @@ const account3 = {
   transactions: [900, -200, 280, 300, -200, 150, 1400, -400],
   interest: 0.8,
   pin: 3333,
+  transactionsDates: [
+    '2020-10-02T14:43:31.074Z',
+    '2020-10-29T11:24:19.761Z',
+    '2021-01-22T12:17:346.255Z',
+    '2022-04-12T18:33:11.041Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2022-04-12T18:33:11.041Z',
+  ],
+  currency: 'UAH',
+  locale: 'uk-UA',
 };
 
 const account4 = {
@@ -28,6 +64,15 @@ const account4 = {
   transactions: [530, 1300, 500, 40, 190],
   interest: 1,
   pin: 4444,
+  transactionsDates: [
+    '2020-10-02T14:43:31.074Z',
+    '2020-10-29T11:24:19.761Z',
+    '2021-01-22T12:17:346.255Z',
+    '2022-04-12T18:33:11.041Z',
+    '2020-06-10T11:43:01.014Z',
+  ],
+  currency: 'UAH',
+  locale: 'uk-UA',
 };
 
 const account5 = {
@@ -35,6 +80,15 @@ const account5 = {
   transactions: [630, 800, 300, 50, 120],
   interest: 1.1,
   pin: 5555,
+  transactionsDates: [
+    '2020-10-02T14:43:31.074Z',
+    '2020-10-29T11:24:19.761Z',
+    '2021-01-22T12:17:346.255Z',
+    '2022-04-12T18:33:11.041Z',
+    '2020-06-10T11:43:01.014Z',
+  ],
+  currency: 'UAH',
+  locale: 'uk-UA',
 };
 
 const accounts = [account1, account2, account3, account4, account5];
@@ -65,21 +119,30 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayTransactions = function (transactions, sort = false) {
+const displayTransactions = function (account, sort = false) {
   containerTransactions.innerHTML = '';
 
   const transacs = sort
-    ? transactions.slice().sort((x, y) => x - y)
-    : transactions;
+    ? account.transactions.slice().sort((x, y) => x - y)
+    : account.transactions;
 
   transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(account.transactionsDates[index]);
+
+    const day = `${date.getDate()}`.padStart(2, '0');
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const year = date.getFullYear();
+
+    const transDate = `${day}/${month}/${year}`;
 
     const transactionRow = `
     <div class="transactions__row">
           <div class="transactions__type transactions__type--${transType}">
             ${index + 1} ${transType}
           </div>
+          <div class="transactions__date">${transDate}</div>
           <div class="transactions__value">${trans.toFixed(2)}$</div>
         </div>`;
 
@@ -126,12 +189,18 @@ const displayTotal = function (account) {
 };
 
 const updateUI = function (account) {
-  displayTransactions(account.transactions);
+  displayTransactions(account);
   displayBalance(account);
   displayTotal(account);
 };
 
 let currentAccount;
+
+// Always logged in
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 1;
+// Always logged in
 
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
@@ -144,6 +213,13 @@ btnLogin.addEventListener('click', e => {
     labelWelcome.textContent = `Рады, что вы снова с нами, ${
       currentAccount.userName.split(' ')[0]
     }!`;
+
+    const now = new Date();
+    // labelDate.textContent = now;
+    const day = `${now.getDate()}`.padStart(2, '0');
+    const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    const year = now.getFullYear();
+    labelDate.textContent = `${day}/${month}/${year}`;
 
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
@@ -179,6 +255,8 @@ btnTransfer.addEventListener('click', e => {
     currentAccount.transactions.push(-transferAmount);
     recipientAccount.transactions.push(transferAmount);
 
+    currentAccount.transactionsDates.push(new Date().toISOString());
+    recipientAccount.transactionsDates.push(new Date().toISOString());
     updateUI(currentAccount);
   }
 });
@@ -213,6 +291,8 @@ btnLoan.addEventListener('click', e => {
     currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
   ) {
     currentAccount.transactions.push(loanAmount);
+
+    currentAccount.transactionsDates.push(new Date().toISOString());
     updateUI(currentAccount);
 
     inputLoanAmount.value = '';
@@ -224,6 +304,6 @@ let transactionsSorted = false;
 btnSort.addEventListener('click', e => {
   e.preventDefault();
 
-  displayTransactions(currentAccount.transactions, !transactionsSorted);
+  displayTransactions(currentAccount, !transactionsSorted);
   transactionsSorted = !transactionsSorted;
 });
