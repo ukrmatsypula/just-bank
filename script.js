@@ -8,14 +8,14 @@ const account1 = {
   interest: 1.5,
   pin: 1111,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2021-01-22T12:17:346.255Z',
-    '2022-04-12T18:33:11.041Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2022-04-12T18:33:11.041Z',
+    '2023-03-23T19:43:31.074Z',
+    '2023-03-21T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-19T09:43:31.074Z',
+    '2023-03-15T09:43:31.074Z',
+    '2023-03-11T09:43:31.074Z',
+    '2023-04-07T18:33:11.041Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -27,7 +27,7 @@ const account2 = {
   interest: 1.3,
   pin: 2222,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
+    '2023-03-23T18:43:31.074Z',
     '2020-10-29T11:24:19.761Z',
     '2021-01-22T12:17:346.255Z',
     '2022-04-12T18:33:11.041Z',
@@ -119,6 +119,25 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const formatTransactionDate = function (date) {
+  const getDaysBetween2Dates = (date1, date2) =>
+    Math.round(Math.abs((date1 - date2) / (1000 * 60 * 60 * 24)));
+
+  const daysPassed = getDaysBetween2Dates(new Date(), date);
+  console.log(daysPassed);
+
+  if (daysPassed === 0) return 'Сегодня';
+  if (daysPassed === 1) return 'Вчера';
+  if (daysPassed <= 5) return `${daysPassed} дня назад`;
+  else {
+    const day = `${date.getDate()}`.padStart(2, '0');
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+};
+
 const displayTransactions = function (account, sort = false) {
   containerTransactions.innerHTML = '';
 
@@ -128,14 +147,9 @@ const displayTransactions = function (account, sort = false) {
 
   transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? 'deposit' : 'withdrawal';
-
     const date = new Date(account.transactionsDates[index]);
 
-    const day = `${date.getDate()}`.padStart(2, '0');
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const year = date.getFullYear();
-
-    const transDate = `${day}/${month}/${year}`;
+    const transDate = formatTransactionDate(date);
 
     const transactionRow = `
     <div class="transactions__row">
