@@ -1,7 +1,5 @@
 'use strict';
 
-// Simply Bank App
-
 const account1 = {
   userName: 'Cecil Ireland',
   transactions: [500.12, 250.33, -300.16, 5000.434, -850, -110, -170, 1100],
@@ -17,8 +15,8 @@ const account1 = {
     '2023-03-11T09:43:31.074Z',
     '2023-04-07T18:33:11.041Z',
   ],
-  currency: 'USD',
-  locale: 'en-US',
+  currency: 'UAH',
+  locale: 'uk-UA',
 };
 
 const account2 = {
@@ -36,8 +34,8 @@ const account2 = {
     '2020-06-10T11:43:01.014Z',
     '2022-04-12T18:33:11.041Z',
   ],
-  currency: 'UAH',
-  locale: 'uk-UA',
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const account3 = {
@@ -55,8 +53,8 @@ const account3 = {
     '2020-06-10T11:43:01.014Z',
     '2022-04-12T18:33:11.041Z',
   ],
-  currency: 'UAH',
-  locale: 'uk-UA',
+  currency: 'EUR',
+  locale: 'fr-CA',
 };
 
 const account4 = {
@@ -65,14 +63,17 @@ const account4 = {
   interest: 1,
   pin: 4444,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
+    '2023-03-23T18:43:31.074Z',
     '2020-10-29T11:24:19.761Z',
     '2021-01-22T12:17:346.255Z',
     '2022-04-12T18:33:11.041Z',
     '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2022-04-12T18:33:11.041Z',
   ],
-  currency: 'UAH',
-  locale: 'uk-UA',
+  currency: 'PLN',
+  locale: 'pl-PL',
 };
 
 const account5 = {
@@ -81,11 +82,14 @@ const account5 = {
   interest: 1.1,
   pin: 5555,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
+    '2023-03-23T18:43:31.074Z',
     '2020-10-29T11:24:19.761Z',
     '2021-01-22T12:17:346.255Z',
     '2022-04-12T18:33:11.041Z',
     '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2020-06-10T11:43:01.014Z',
+    '2022-04-12T18:33:11.041Z',
   ],
   currency: 'UAH',
   locale: 'uk-UA',
@@ -119,22 +123,17 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const formatTransactionDate = function (date) {
+const formatTransactionDate = function (date, locale) {
   const getDaysBetween2Dates = (date1, date2) =>
     Math.round(Math.abs((date1 - date2) / (1000 * 60 * 60 * 24)));
 
   const daysPassed = getDaysBetween2Dates(new Date(), date);
-  console.log(daysPassed);
 
   if (daysPassed === 0) return 'Сегодня';
   if (daysPassed === 1) return 'Вчера';
   if (daysPassed <= 5) return `${daysPassed} дня назад`;
   else {
-    const day = `${date.getDate()}`.padStart(2, '0');
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
+    return new Intl.DateTimeFormat(locale).format(date);
   }
 };
 
@@ -147,9 +146,9 @@ const displayTransactions = function (account, sort = false) {
 
   transacs.forEach(function (trans, index) {
     const transType = trans > 0 ? 'deposit' : 'withdrawal';
-    const date = new Date(account.transactionsDates[index]);
+    const date = new Date(account?.transactionsDates[index]);
 
-    const transDate = formatTransactionDate(date);
+    const transDate = formatTransactionDate(date, account.locale);
 
     const transactionRow = `
     <div class="transactions__row">
@@ -229,11 +228,19 @@ btnLogin.addEventListener('click', e => {
     }!`;
 
     const now = new Date();
-    // labelDate.textContent = now;
-    const day = `${now.getDate()}`.padStart(2, '0');
-    const month = `${now.getMonth() + 1}`.padStart(2, '0');
-    const year = now.getFullYear();
-    labelDate.textContent = `${day}/${month}/${year}`;
+    const options = {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      weekday: 'long',
+    };
+
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
 
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
