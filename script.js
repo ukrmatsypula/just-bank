@@ -341,10 +341,12 @@ btnLoan.addEventListener('click', e => {
     loanAmount > 0 &&
     currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
   ) {
-    currentAccount.transactions.push(loanAmount);
+    setTimeout(() => {
+      currentAccount.transactions.push(loanAmount);
 
-    currentAccount.transactionsDates.push(new Date().toISOString());
-    updateUI(currentAccount);
+      currentAccount.transactionsDates.push(new Date().toISOString());
+      updateUI(currentAccount);
+    }, 5000);
 
     inputLoanAmount.value = '';
   }
