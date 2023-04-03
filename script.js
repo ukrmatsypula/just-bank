@@ -25,14 +25,14 @@ const account2 = {
   interest: 1.3,
   pin: 2222,
   transactionsDates: [
-    '2023-03-23T18:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2021-01-22T12:17:346.255Z',
-    '2022-04-12T18:33:11.041Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2022-04-12T18:33:11.041Z',
+    '2023-03-23T19:43:31.074Z',
+    '2023-03-21T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-19T09:43:31.074Z',
+    '2023-03-15T09:43:31.074Z',
+    '2023-03-11T09:43:31.074Z',
+    '2023-04-07T18:33:11.041Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -44,16 +44,16 @@ const account3 = {
   interest: 0.8,
   pin: 3333,
   transactionsDates: [
-    '2020-10-02T14:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2021-01-22T12:17:346.255Z',
-    '2022-04-12T18:33:11.041Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2022-04-12T18:33:11.041Z',
+    '2023-03-23T19:43:31.074Z',
+    '2023-03-21T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-19T09:43:31.074Z',
+    '2023-03-15T09:43:31.074Z',
+    '2023-03-11T09:43:31.074Z',
+    '2023-04-07T18:33:11.041Z',
   ],
-  currency: 'EUR',
+  currency: 'CAD',
   locale: 'fr-CA',
 };
 
@@ -63,14 +63,14 @@ const account4 = {
   interest: 1,
   pin: 4444,
   transactionsDates: [
-    '2023-03-23T18:43:31.074Z',
-    '2020-10-29T11:24:19.761Z',
-    '2021-01-22T12:17:346.255Z',
-    '2022-04-12T18:33:11.041Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2020-06-10T11:43:01.014Z',
-    '2022-04-12T18:33:11.041Z',
+    '2023-03-23T19:43:31.074Z',
+    '2023-03-21T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-22T09:43:31.074Z',
+    '2023-03-19T09:43:31.074Z',
+    '2023-03-15T09:43:31.074Z',
+    '2023-03-11T09:43:31.074Z',
+    '2023-04-07T18:33:11.041Z',
   ],
   currency: 'PLN',
   locale: 'pl-PL',
@@ -137,6 +137,13 @@ const formatTransactionDate = function (date, locale) {
   }
 };
 
+const formatCurrency = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
+
 const displayTransactions = function (account, sort = false) {
   containerTransactions.innerHTML = '';
 
@@ -150,13 +157,19 @@ const displayTransactions = function (account, sort = false) {
 
     const transDate = formatTransactionDate(date, account.locale);
 
+    const formatedTrans = formatCurrency(
+      trans.toFixed(2),
+      account.locale,
+      account.currency
+    );
+
     const transactionRow = `
     <div class="transactions__row">
           <div class="transactions__type transactions__type--${transType}">
             ${index + 1} ${transType}
           </div>
           <div class="transactions__date">${transDate}</div>
-          <div class="transactions__value">${trans.toFixed(2)}$</div>
+          <div class="transactions__value">${formatedTrans}</div>
         </div>`;
 
     containerTransactions.insertAdjacentHTML('afterbegin', transactionRow);
@@ -178,7 +191,11 @@ createNicknames(accounts);
 const displayBalance = function (account) {
   const balance = account.transactions.reduce((acc, trans) => (acc += trans));
   account.balance = balance;
-  labelBalance.textContent = `${balance.toFixed(2)}$`;
+  labelBalance.textContent = formatCurrency(
+    balance,
+    account.locale,
+    account.currency
+  );
 };
 
 const displayTotal = function (account) {
@@ -196,9 +213,22 @@ const displayTotal = function (account) {
     .filter(interest => interest >= 5)
     .reduce((acc, interest) => acc + interest, 0);
 
-  labelSumIn.textContent = `${depositesTotal.toFixed(2)}$`;
-  labelSumOut.textContent = `${withdrawalsTotal.toFixed(2)}$`;
-  labelSumInterest.textContent = `${interestTotal.toFixed(2)}$`;
+  labelSumIn.textContent = formatCurrency(
+    depositesTotal.toFixed(2),
+    account.locale,
+    account.currency
+  );
+
+  labelSumOut.textContent = formatCurrency(
+    withdrawalsTotal.toFixed(2),
+    account.locale,
+    account.currency
+  );
+  labelSumInterest.textContent = formatCurrency(
+    interestTotal.toFixed(2),
+    account.locale,
+    account.currency
+  );
 };
 
 const updateUI = function (account) {
