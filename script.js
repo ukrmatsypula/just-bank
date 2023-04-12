@@ -240,9 +240,9 @@ const updateUI = function (account) {
 let currentAccount, currentLogOutTimer;
 
 // Always logged in
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 1;
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 1;
 // Always logged in
 
 const startLogoutTimer = function () {
