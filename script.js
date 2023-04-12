@@ -237,13 +237,36 @@ const updateUI = function (account) {
   displayTotal(account);
 };
 
-let currentAccount;
+let currentAccount, currentLogOutTimer;
 
 // Always logged in
 currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 1;
 // Always logged in
+
+const startLogoutTimer = function () {
+  const logOutTimerCallback = function () {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, '0');
+    const seconds = String(time % 60).padStart(2, '0');
+    labelTimer.textContent = `${minutes}: ${seconds}`;
+
+    if (time === 0) {
+      clearInterval(logOutTimer);
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = 'Войдите в свой аккаунт';
+    }
+
+    time--;
+  };
+
+  let time = 300;
+
+  logOutTimerCallback();
+  const logOutTimer = setInterval(logOutTimerCallback, 1000);
+
+  return logOutTimer;
+};
 
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
@@ -275,6 +298,9 @@ btnLogin.addEventListener('click', e => {
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    if (currentLogOutTimer) clearInterval(currentLogOutTimer);
+    currentLogOutTimer = startLogoutTimer();
 
     updateUI(currentAccount);
 
@@ -309,6 +335,9 @@ btnTransfer.addEventListener('click', e => {
     currentAccount.transactionsDates.push(new Date().toISOString());
     recipientAccount.transactionsDates.push(new Date().toISOString());
     updateUI(currentAccount);
+
+    clearInterval(currentLogOutTimer);
+    currentLogOutTimer = startLogoutTimer();
   }
 });
 
@@ -349,6 +378,9 @@ btnLoan.addEventListener('click', e => {
     }, 5000);
 
     inputLoanAmount.value = '';
+
+    clearInterval(currentLogOutTimer);
+    currentLogOutTimer = startLogoutTimer();
   }
 });
 
